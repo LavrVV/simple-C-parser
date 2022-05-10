@@ -1,9 +1,9 @@
 #ifndef AST_H
 #define AST_H
 
-#include "astnodes.h"
+#include <libparser/astnodes.hpp>
 
-class AST{
+class AST {
 public:
     explicit AST(std::vector<Token> tokens);
 

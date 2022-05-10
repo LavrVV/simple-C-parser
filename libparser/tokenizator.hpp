@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-enum TokenType{
+enum TokenType {
     operator_token,
     name_token,
     type_token,
@@ -13,7 +13,7 @@ enum TokenType{
     literal_token
 };
 
-class Token{
+class Token {
 public:
     TokenType token_type;
     Token(std::string s, TokenType t);

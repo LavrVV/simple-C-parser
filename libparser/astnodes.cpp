@@ -1,4 +1,4 @@
-#include "astnodes.h"
+#include <libparser/astnodes.hpp>
 
 #include <cctype>
 

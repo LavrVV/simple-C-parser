@@ -1,11 +1,11 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.13)
 
-project(simple_C_parser)
+project(simple_C_parser VERSION 0.1.0)
 
-set(SOURCE_LIB parser.cpp tokenizator.cpp ast.cpp astnodes.cpp)
-set(HEADERS parser.h tokenizator.h ast.h astnodes.h)
-add_library(parser STATIC ${SOURCE_LIB})
+include_directories(.)
+#executable
+add_subdirectory(simple_C_parser)
+#libs
+add_subdirectory(libparser)
 
-add_executable(${PROJECT_NAME} "main.cpp")
-
-target_link_libraries(${PROJECT_NAME} parser)
+target_link_libraries(${PROJECT_NAME} libparser)

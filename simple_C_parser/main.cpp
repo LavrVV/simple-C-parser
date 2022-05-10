@@ -1,7 +1,7 @@
 #include <iostream>
-#include "parser.h"
+#include <libparser/parser.hpp>
 
-int main(){
+int main() {
     AST a = parse("");
     return 0;
 }

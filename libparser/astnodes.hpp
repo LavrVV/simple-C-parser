@@ -5,10 +5,10 @@
 #include <stack>
 #include <memory>
 
-#include "tokenizator.h"
+#include <libparser/tokenizator.hpp>
 
 
-enum ASTValType{
+enum ASTValType {
     String,
     Int,
     Float,
@@ -18,7 +18,7 @@ enum ASTValType{
 };
 
 
-enum OperatorType{
+enum OperatorType {
     Plus,
     Minus,
     Divide,
@@ -33,7 +33,7 @@ enum OperatorType{
 class Value;
 
 
-class ASTNode{
+class ASTNode {
 public:
     ASTNode();
 
@@ -47,7 +47,7 @@ public:
 };
 
 
-class Value: public ASTNode{
+class Value: public ASTNode {
 public:
     explicit Value(std::string val);
 
@@ -63,7 +63,7 @@ private:
 };
 
 
-class Variable: public ASTNode{
+class Variable: public ASTNode {
 public:
     explicit Variable(std::string name);
 
@@ -74,7 +74,7 @@ private:
 };
 
 
-class VariableDeclaration: public ASTNode{
+class VariableDeclaration: public ASTNode {
 public:
     VariableDeclaration(std::string name, std::string valtype);
 
@@ -87,7 +87,7 @@ private:
 };
 
 
-class Assign: public ASTNode{
+class Assign: public ASTNode {
 public:
     Assign(std::string name, std::shared_ptr<ASTNode> what);
 
@@ -98,7 +98,7 @@ private:
 };
 
 
-class Operator: public ASTNode{
+class Operator: public ASTNode {
 public:
     explicit Operator(std::string val);
 
@@ -111,7 +111,7 @@ private:
 };
 
 
-class Return: public ASTNode{
+class Return: public ASTNode {
 public:
     explicit Return(std::shared_ptr<ASTNode> expr);
 
@@ -119,7 +119,7 @@ public:
 };
 
 
-class If: public ASTNode{
+class If: public ASTNode {
 public:
     If(std::shared_ptr<ASTNode> condition, std::shared_ptr<ASTNode> block);
 
@@ -133,7 +133,7 @@ private:
 };
 
 
-class While: public ASTNode{
+class While: public ASTNode {
 public:
     While(std::shared_ptr<ASTNode> condition, std::shared_ptr<ASTNode> block);
 
@@ -144,7 +144,7 @@ private:
 };
 
 
-class For: public ASTNode{
+class For: public ASTNode {
 public:
     For(std::shared_ptr<ASTNode> declaration, std::shared_ptr<ASTNode> condition,
         std::shared_ptr<ASTNode> increment, std::shared_ptr<ASTNode> block);
@@ -156,7 +156,7 @@ private:
 };
 
 
-class Block: public ASTNode{
+class Block: public ASTNode {
 public:
     Block();
 
@@ -164,7 +164,7 @@ public:
 };
 
 
-class Function: public ASTNode{
+class Function: public ASTNode {
 public:
     Function(std::string name, std::string return_type,
              std::vector<std::string> params, std::shared_ptr<ASTNode> root);
@@ -182,7 +182,7 @@ private:
 };
 
 
-class CallFunction: public ASTNode{
+class CallFunction: public ASTNode {
 public:
     CallFunction(std::shared_ptr<ASTNode> root,
                  std::vector<std::shared_ptr<ASTNode>> params);

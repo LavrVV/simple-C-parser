@@ -1,7 +1,7 @@
 #ifndef PARSER_H
 #define PARSER_H
 
-#include "ast.h"
+#include <libparser/ast.hpp>
 
 AST parse(std::string s);
 
