@@ -31,6 +31,9 @@
 *.out
 *.app
 
+# vscode
 .vscode
+# QTCreator
 CMakeLists.txt.user
+# build dir
 /build*
