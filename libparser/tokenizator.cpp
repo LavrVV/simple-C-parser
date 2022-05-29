@@ -29,7 +29,7 @@ bool is_close_bracket(char c) {
         return false;
 }
 
-
+// TODO add > < >= <= operator
 bool is_operator(char c) {
     if(c == '+' || c == '-' || c == '*' || c == '/' || c == '%' || c == '!' ||
             c == '|' || c == '&' || c == '=' || c == ',' || c == ';')

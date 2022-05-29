@@ -1,73 +1,16 @@
 #ifndef ASTNODES_H
 #define ASTNODES_H
 
-#include <map>
-#include <stack>
-#include <memory>
-
 #include <libparser/tokenizator.hpp>
-
-
-enum ASTValType {
-    String,
-    Int,
-    Float,
-    Char,
-    Bool,
-    Void
-};
-
-
-enum OperatorType {
-    Plus,
-    Minus,
-    Divide,
-    Mod,
-    Multiply,
-    And,
-    Or,
-    Not
-};
-
-
-class Value;
-
-
-class ASTNode {
-public:
-    ASTNode();
-
-    virtual Value execute(std::vector<std::map<std::string, std::shared_ptr<ASTNode>>*>& context);
-
-    virtual void add_child(std::shared_ptr<ASTNode> child);
-
-    virtual ~ASTNode() = default;
-
-    std::vector<std::shared_ptr<ASTNode>> nodes;
-};
-
-
-class Value: public ASTNode {
-public:
-    explicit Value(std::string val);
-
-    Value execute(std::vector<std::map<std::string, std::shared_ptr<ASTNode>>*>& context) override;
-
-    std::string get_value() const;
-
-    bool is_return;
-private:
-    ASTValType valtype;
-
-    std::string value;
-};
+#include <libparser/base_astnode.hpp>
 
 
 class Variable: public ASTNode {
 public:
     explicit Variable(std::string name);
 
-    Value execute(std::vector<std::map<std::string, std::shared_ptr<ASTNode>>*>& context) override;
+    /** return varibale value by name */
+    Value execute(Context& context) override;
 
 private:
     std::string name;
@@ -77,8 +20,9 @@ private:
 class VariableDeclaration: public ASTNode {
 public:
     VariableDeclaration(std::string name, std::string valtype);
-
-    Value execute(std::vector<std::map<std::string, std::shared_ptr<ASTNode>>*>& context) override;
+    
+    /** add var to current context*/
+    Value execute(Context& context) override;
 
 private:
     ASTValType valtype;
@@ -91,7 +35,8 @@ class Assign: public ASTNode {
 public:
     Assign(std::string name, std::shared_ptr<ASTNode> what);
 
-    Value execute(std::vector<std::map<std::string, std::shared_ptr<ASTNode>>*>& context) override;
+    /** set variable value by name */
+    Value execute(Context& context) override;
 
 private:
     std::string name;
@@ -102,7 +47,7 @@ class Operator: public ASTNode {
 public:
     explicit Operator(std::string val);
 
-    Value execute(std::vector<std::map<std::string, std::shared_ptr<ASTNode>>*>& context) override;
+    Value execute(Context& context) override;
 
 private:
     //std::string value;
@@ -115,7 +60,8 @@ class Return: public ASTNode {
 public:
     explicit Return(std::shared_ptr<ASTNode> expr);
 
-    Value execute(std::vector<std::map<std::string, std::shared_ptr<ASTNode>>*>& context) override;
+    /** finish function and ret expr.exec */
+    Value execute(Context& context) override;
 };
 
 
@@ -125,8 +71,8 @@ public:
 
     If(std::shared_ptr<ASTNode> condition, std::shared_ptr<ASTNode> block,
        std::shared_ptr<ASTNode> else_block);
-
-    Value execute(std::vector<std::map<std::string, std::shared_ptr<ASTNode>>*>& context) override;
+    
+    Value execute(Context& context) override;
 
 private:
     std::string value;
@@ -137,7 +83,7 @@ class While: public ASTNode {
 public:
     While(std::shared_ptr<ASTNode> condition, std::shared_ptr<ASTNode> block);
 
-    Value execute(std::vector<std::map<std::string, std::shared_ptr<ASTNode>>*>& context) override;
+    Value execute(Context& context) override;
 
 private:
     std::string value;
@@ -149,7 +95,7 @@ public:
     For(std::shared_ptr<ASTNode> declaration, std::shared_ptr<ASTNode> condition,
         std::shared_ptr<ASTNode> increment, std::shared_ptr<ASTNode> block);
 
-    Value execute(std::vector<std::map<std::string, std::shared_ptr<ASTNode>>*>& context) override;
+    Value execute(Context& context) override;
 
 private:
     std::string value;
@@ -160,7 +106,7 @@ class Block: public ASTNode {
 public:
     Block();
 
-    Value execute(std::vector<std::map<std::string, std::shared_ptr<ASTNode>>*>& context) override;
+    Value execute(Context& context) override;
 };
 
 
@@ -169,7 +115,7 @@ public:
     Function(std::string name, std::string return_type,
              std::vector<std::string> params, std::shared_ptr<ASTNode> root);
 
-    Value execute(std::vector<std::map<std::string, std::shared_ptr<ASTNode>>*>& context) override;
+    Value execute(Context& context) override;
 
     const std::vector<std::string>& get_param_names() const;
 
@@ -187,7 +133,7 @@ public:
     CallFunction(std::shared_ptr<ASTNode> root,
                  std::vector<std::shared_ptr<ASTNode>> params);
 
-    Value execute(std::vector<std::map<std::string, std::shared_ptr<ASTNode>>*>& context) override;
+    Value execute(Context& context) override;
 
     const std::vector<std::string>& get_param_names() const;
 

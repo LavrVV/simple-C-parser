@@ -2,29 +2,6 @@
 
 #include <queue>
 
-/*
-<type>
-<name>
-<literal> ::= true | false | <number> | '<char>' |  "string"
-<operator>
-
-<val> ::= <literal> | <name>
-<expression> ::= <val> <operator> <val> | <expression> <operator> <val> | ( <expression> ) | <val>
-<declaration> ::= <type> <name> ; | <type> <name> = <expression> ;
-<assign> ::= <name> = <expression> ;
-<if> ::= if ( <expression> ) { <statments> } ?[else { <statments> }]?
-<while> ::= while (<expression>) { <statments> }
-<for> ::= for ( ?[<declaratio> | <assign>]?; ?[<expression>]?; ?[assing]?) { <statements> }
-<statment> ::= <declaration> | <assign> | <if> | <for> | <while>
-<statments> ::= <statment> <statment>
-
-
-val ::= var | literal
-expression ::= val operator val | val operator expression | (expression)
-func_parameters ::= type varname | func_parameters , type varname
-function ::= type name (type varname,  )
-*/
-
 
 AST::AST(std::vector<Token> tokens) {
     this->parse(tokens);
@@ -32,10 +9,10 @@ AST::AST(std::vector<Token> tokens) {
 
 std::string AST::execute() {
     Value res("");
-    std::vector<std::map<std::string, std::shared_ptr<ASTNode>>*> context;
-    context.push_back(&this->vars);
+    Context context;
+    context.push_scope(&vars);
     for (auto st: root)
-        ;//res = st->execute(context);
+        res = st->execute(context);
     return res.get_value();
 }
 
@@ -54,12 +31,12 @@ void AST::parse(std::vector<Token>& tokens) {
 std::shared_ptr<ASTNode> AST::parse_statment(std::vector<Token>& tokens, size_t& pos) {
     if (tokens[pos].get_value() == ";") {
         return std::shared_ptr<ASTNode>(new ASTNode());
-    }
-    else if (tokens[pos].token_type == TokenType::name_token) {
+    } else if (tokens[pos].token_type == TokenType::name_token) {
         if (tokens[pos + 1].get_value() == "(") {
-            //call function
+            // call function
             return this->parse_expression(tokens, pos);
         } else if (tokens[pos + 1].get_value() == "=") {
+            // assigment
             auto name = tokens[pos].get_value();
             pos += 2;
             auto res = this->parse_expression(tokens, pos);
@@ -68,11 +45,12 @@ std::shared_ptr<ASTNode> AST::parse_statment(std::vector<Token>& tokens, size_t&
         }
     } else if (tokens[pos].token_type == TokenType::type_token) {
         if (tokens[pos + 2].get_value() == "(") {
+            // function definition
             auto ret_type = tokens[pos].get_value();
             pos++;
             auto name = tokens[pos].get_value();
             pos += 2;
-            std::vector<std::string> params;
+            std::vector<std::string> params; // names
             for (; pos < tokens.size(); pos += 3) {
                 if (tokens[pos].token_type == TokenType::close_bracket_token) {
                     break;
@@ -87,6 +65,7 @@ std::shared_ptr<ASTNode> AST::parse_statment(std::vector<Token>& tokens, size_t&
             this->vars[name] = res;
             return res;
         } else {
+            // var decl
             auto var_type = tokens[pos].get_value();
             auto var_name = tokens[pos + 1].get_value();
             auto decl = new VariableDeclaration(var_name, var_type);
@@ -99,7 +78,6 @@ std::shared_ptr<ASTNode> AST::parse_statment(std::vector<Token>& tokens, size_t&
         }
     } else if (tokens[pos].token_type == TokenType::operator_token) {
         if (tokens[pos].get_value() == "for") {
-            //for
             pos += 2;
             auto decl = this->parse_statment(tokens, pos);
             auto condition = this->parse_expression(tokens, pos);
@@ -114,7 +92,7 @@ std::shared_ptr<ASTNode> AST::parse_statment(std::vector<Token>& tokens, size_t&
             auto block = this->parse_block(tokens, pos);
             auto reswhile = new While(condition, block);
             return std::shared_ptr<ASTNode>(reswhile);
-        } else if (tokens[pos].get_value() == "if") {
+        } else if (tokens[pos].get_value() == "if") { // TODO support without {}
             pos += 2;
             auto condition = this->parse_expression(tokens, pos);
             pos += 1;

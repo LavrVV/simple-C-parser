@@ -1,7 +1,7 @@
 #include <libparser/astnodes.hpp>
 
 #include <cctype>
-
+#include <libparser/context.hpp>
 
 inline ASTValType read_type(const std::string& return_type) {
     if (return_type == "bool") {
@@ -21,73 +21,15 @@ inline ASTValType read_type(const std::string& return_type) {
 }
 
 
-ASTNode::ASTNode() {
-
-}
-
-
-Value ASTNode::execute(std::vector<std::map<std::string, std::shared_ptr<ASTNode>>*>& context) {
-    return  Value("null");
-}
-
-
-void ASTNode::add_child(std::shared_ptr<ASTNode> child) {
-    this->nodes.push_back(child);
-}
-
-
-Value::Value(std::string val) {
-    if (val[0] == '\'' and val.size() == 3) {
-        this->valtype = ASTValType::Char;
-        this->value = val.substr(1, 1);
-    } else if (val[0] == '\"') {
-        this->valtype = ASTValType::String;
-        this->value = val.substr(1, val.size() - 1);
-    } else if(std::isdigit(val[0]) or val[0] == '-') {
-        try {
-            std::stof(val);
-            this->valtype = ASTValType::Float;
-            this->value = val;
-            return;
-        } catch (std::invalid_argument e) {
-
-        }
-
-        try {
-            std::stoi(val);
-            this->valtype = ASTValType::Int;
-            this->value = val;
-            return;
-        } catch (std::invalid_argument e) {
-
-        }
-    } else if (val == "true" or val == "false") {
-        this->valtype = ASTValType::Bool;
-        this->value = val;
-    } else if (val == "" or val == "null") {
-        this->valtype = ASTValType::Void;
-        this->value = val;
-    }
-}
-
-
-Value Value::execute(std::vector<std::map<std::string, std::shared_ptr<ASTNode>>*>& context) {
-    return *this;
-}
-
-
-std::string Value::get_value() const {
-    return this->value;
-}
-
-
 Variable::Variable(std::string name): name(name) {
 
 }
 
 
-Value Variable::execute(std::vector<std::map<std::string, std::shared_ptr<ASTNode>>*>& context) {
-
+Value Variable::execute(Context& context) {
+    auto res = context.get_var_value(this->name);
+    if (typeid(*res) == typeid(Value)) 
+        return *(dynamic_cast<Value*>(res.get()));
 }
 
 
@@ -96,8 +38,9 @@ VariableDeclaration::VariableDeclaration(std::string name, std::string valtype):
 }
 
 
-Value VariableDeclaration::execute(std::vector<std::map<std::string, std::shared_ptr<ASTNode>>*>& context) {
-
+Value VariableDeclaration::execute(Context& context) {
+    context.add_var(name);
+    return Value("");
 }
 
 
@@ -106,8 +49,9 @@ Assign::Assign(std::string name, std::shared_ptr<ASTNode> what): name(name) {
 }
 
 
-Value Assign::execute(std::vector<std::map<std::string, std::shared_ptr<ASTNode>>*>& context) {
-
+Value Assign::execute(Context& context) {
+    auto res = nodes[0]->execute(context);
+    context.set_var_value(name, std::shared_ptr<ASTNode>(new Value(res)));
 }
 
 
@@ -133,9 +77,91 @@ Operator::Operator(std::string val) {
     }
 }
 
+inline bool to_boolean(std::string value) {
+    if (value == "true")
+        return true;
+    else if (value == "false")
+        return false;
+    else
+        return true; // default change if u want
+}
 
-Value Operator::execute(std::vector<std::map<std::string, std::shared_ptr<ASTNode>>*>& context) {
+inline std::string to_string(bool value) {
+    return value ? "true" : "false";
+}
 
+Value Operator::execute(Context& context) {
+    if (op_type == OperatorType::Not)
+        return Value(to_string(!to_boolean(nodes[0]->execute(context).get_value())));
+    auto left = nodes[0]->execute(context); 
+    auto right = nodes[1]->execute(context);
+    switch (op_type) {
+        case OperatorType::Multiply:
+            if (left.get_valtype() < 2 and right.get_valtype() < 2) {
+                if (left.get_valtype() == ASTValType::Float or 
+                    right.get_valtype() == ASTValType::Float) {
+                    return Value(std::to_string(std::stof(left.get_value()) * std::stof(right.get_value())));
+                } else {
+                    return Value(std::to_string(std::stoi(left.get_value()) * std::stoi(right.get_value())));
+                }
+            }
+            break;
+        case OperatorType::Divide:
+            if (left.get_valtype() < 2 and right.get_valtype() < 2) {
+                if (left.get_valtype() == ASTValType::Float or 
+                    right.get_valtype() == ASTValType::Float) {
+                    return Value(std::to_string(std::stof(left.get_value()) / std::stof(right.get_value())));
+                } else {
+                    return Value(std::to_string(std::stoi(left.get_value()) / std::stoi(right.get_value())));
+                }
+            }
+            break;
+        case OperatorType::Plus:
+            if (left.get_valtype() < 2 and right.get_valtype() < 2) {
+                if (left.get_valtype() == ASTValType::Float or 
+                    right.get_valtype() == ASTValType::Float) {
+                    return Value(std::to_string(std::stof(left.get_value()) + std::stof(right.get_value())));
+                } else {
+                    return Value(std::to_string(std::stoi(left.get_value()) + std::stoi(right.get_value())));
+                }
+            } else if (left.get_valtype() == ASTValType::String or 
+                       right.get_valtype() == ASTValType::String) {
+                return Value(left.get_value() + right.get_value());
+            }
+            break;
+        case OperatorType::Minus:
+            if (left.get_valtype() < 2 and right.get_valtype() < 2) {
+                if (left.get_valtype() == ASTValType::Float or 
+                    right.get_valtype() == ASTValType::Float) {
+                    return Value(std::to_string(std::stof(left.get_value()) - std::stof(right.get_value())));
+                } else {
+                    return Value(std::to_string(std::stoi(left.get_value()) - std::stoi(right.get_value())));
+                }
+            }
+            break;
+        case OperatorType::Mod:
+            if (left.get_valtype() < 2 and right.get_valtype() < 2) {
+                return Value(std::to_string(std::stoi(left.get_value()) % std::stoi(right.get_value())));
+            }
+            break;
+        case OperatorType::Or:
+            if (left.get_valtype() == ASTValType::Bool and 
+                right.get_valtype() == ASTValType::Bool) {
+                auto res = to_boolean(left.get_value()) and to_boolean(right.get_value());
+                return Value(to_string(res)); 
+            }
+            break;
+        case OperatorType::And:
+            if (left.get_valtype() == ASTValType::Bool and 
+                right.get_valtype() == ASTValType::Bool) {
+                auto res = to_boolean(left.get_value()) or to_boolean(right.get_value());
+                return Value(to_string(res)); 
+            }
+            break;
+        default:
+            return Value("");
+            break;
+    }
 }
 
 
@@ -144,8 +170,10 @@ Return::Return(std::shared_ptr<ASTNode> expr) {
 }
 
 
-Value Return::execute(std::vector<std::map<std::string, std::shared_ptr<ASTNode>>*>& context) {
-
+Value Return::execute(Context& context) {
+    auto res = nodes[0]->execute(context);
+    res.is_return = true;
+    return res;
 }
 
 
@@ -163,8 +191,13 @@ If::If(std::shared_ptr<ASTNode> condition, std::shared_ptr<ASTNode> block,
 }
 
 
-Value If::execute(std::vector<std::map<std::string, std::shared_ptr<ASTNode>>*>& context) {
-
+Value If::execute(Context& context) {
+    context.push_scope();
+    if (nodes[0]->execute(context).get_value() == "true") {
+        return nodes[1]->execute(context);
+    } else if (nodes.size() > 2) {
+        return nodes[1]->execute(context);
+    }
 }
 
 
@@ -174,8 +207,11 @@ While::While(std::shared_ptr<ASTNode> condition, std::shared_ptr<ASTNode> block)
 }
 
 
-Value While::execute(std::vector<std::map<std::string, std::shared_ptr<ASTNode>>*>& context) {
-
+Value While::execute(Context& context) {
+    while (nodes[0]->execute(context).get_value() == "true") {
+        nodes[1]->execute(context);
+    }
+    return Value("");
 }
 
 
@@ -188,8 +224,14 @@ For::For(std::shared_ptr<ASTNode> declaration, std::shared_ptr<ASTNode> conditio
 }
 
 
-Value For::execute(std::vector<std::map<std::string, std::shared_ptr<ASTNode>>*>& context) {
-
+Value For::execute(Context& context) {
+    context.push_scope();
+    nodes[0]->execute(context);
+    while (nodes[1]->execute(context).get_value() == "true") {
+        nodes[2]->execute(context);
+        nodes[3]->execute(context);
+    }
+    return Value("");
 }
 
 
@@ -198,8 +240,17 @@ Block::Block() {
 }
 
 
-Value Block::execute(std::vector<std::map<std::string, std::shared_ptr<ASTNode>>*>& context) {
-
+Value Block::execute(Context& context) {
+    context.push_scope();
+    for (auto node: nodes) { 
+        auto res = node->execute(context); 
+        if (res.is_return) {
+            context.pop_scope();
+            return res;
+        }
+    }
+    context.pop_scope();
+    return Value("");
 }
 
 
@@ -211,8 +262,8 @@ Function::Function(std::string name, std::string return_type,
 }
 
 
-Value Function::execute(std::vector<std::map<std::string, std::shared_ptr<ASTNode>>*>& context) {
-
+Value Function::execute(Context& context) {
+    return nodes[0]->execute(context);
 }
 
 
@@ -228,8 +279,17 @@ CallFunction::CallFunction(std::shared_ptr<ASTNode> root,
     //params
 }
 
-Value CallFunction::execute(std::vector<std::map<std::string, std::shared_ptr<ASTNode>>*>& context) {
-
+Value CallFunction::execute(Context& context) {
+    context.push_scope();
+    auto func = dynamic_cast<Function*>(root.get());
+    auto param_name = func->get_param_names().begin();
+    for (auto param: nodes) {
+        context.set_var_value(*param_name, param);
+        param_name++;
+    }
+    auto res = root->execute(context);
+    context.pop_scope();
+    return res;
 }
 
 
