@@ -32,11 +32,6 @@ class ASTNode {
 public:
     ASTNode();
 
-    /**
-     * @brief vector of map variable_name -> variable_value
-     */
-    //using Context = std::vector<std::map<std::string, std::shared_ptr<ASTNode>>*>;
-
     virtual Value execute(Context& context);
 
     virtual void add_child(std::shared_ptr<ASTNode> child);
@@ -46,7 +41,7 @@ public:
     std::vector<std::shared_ptr<ASTNode>> nodes;
 };
 
-/** dummy */
+
 class Value: public ASTNode {
 public:
     explicit Value(std::string val);
