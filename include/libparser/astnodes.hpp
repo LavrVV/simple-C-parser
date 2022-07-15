@@ -92,8 +92,11 @@ private:
 
 class For: public ASTNode {
 public:
-    For(std::shared_ptr<ASTNode> declaration, std::shared_ptr<ASTNode> condition,
-        std::shared_ptr<ASTNode> increment, std::shared_ptr<ASTNode> block);
+    For(std::shared_ptr<ASTNode> declaration, 
+        std::shared_ptr<ASTNode> definiton,
+        std::shared_ptr<ASTNode> condition,
+        std::shared_ptr<ASTNode> increment,
+        std::shared_ptr<ASTNode> block);
 
     Value execute(Context& context) override;
 

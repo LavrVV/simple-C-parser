@@ -93,8 +93,8 @@ inline std::string to_string(bool value) {
 Value Operator::execute(Context& context) {
     if (op_type == OperatorType::Not)
         return Value(to_string(!to_boolean(nodes[0]->execute(context).get_value())));
-    auto left = nodes[0]->execute(context); 
-    auto right = nodes[1]->execute(context);
+    auto left = nodes[1]->execute(context); 
+    auto right = nodes[0]->execute(context);
     switch (op_type) {
         case OperatorType::Multiply:
             if (left.get_valtype() < 2 and right.get_valtype() < 2) {
@@ -215,9 +215,13 @@ Value While::execute(Context& context) {
 }
 
 
-For::For(std::shared_ptr<ASTNode> declaration, std::shared_ptr<ASTNode> condition,
-         std::shared_ptr<ASTNode> increment, std::shared_ptr<ASTNode> block) {
+For::For(std::shared_ptr<ASTNode> declaration,
+         std::shared_ptr<ASTNode> definition,
+         std::shared_ptr<ASTNode> condition,
+         std::shared_ptr<ASTNode> increment, 
+         std::shared_ptr<ASTNode> block) {
     this->nodes.push_back(declaration);
+    this->nodes.push_back(definition);
     this->nodes.push_back(condition);
     this->nodes.push_back(increment);
     this->nodes.push_back(block);
@@ -227,9 +231,10 @@ For::For(std::shared_ptr<ASTNode> declaration, std::shared_ptr<ASTNode> conditio
 Value For::execute(Context& context) {
     context.push_scope();
     nodes[0]->execute(context);
-    while (nodes[1]->execute(context).get_value() == "true") {
-        nodes[2]->execute(context);
+    nodes[1]->execute(context);
+    while (nodes[2]->execute(context).get_value() == "true") {
         nodes[3]->execute(context);
+        nodes[4]->execute(context);
     }
     return Value("");
 }

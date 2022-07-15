@@ -3,12 +3,9 @@
 #include <cctype>
 
 
-Token::Token(std::string s, TokenType t) {
-    this->token = s;
-    this->token_type = t;
-    this->priority = 0;
-}
+Token::Token(std::string s, TokenType t): token(s), token_type(t), priority(0) {}
 
+Token::Token(std::string s, TokenType t, int p): token(s), token_type(t), priority(p) {}
 
 std::string Token::get_value() const {
     return  this->token;
@@ -48,9 +45,10 @@ bool is_separator(char c) {
 
 
 Token read_operator(std::string s, size_t& from) {
-    std::string res = "" + s[from];
+    std::string res(1, s[from]);
     if(is_operator(s[from + 1])){
         res += s[from + 1];
+        from++;
     }
     auto t = Token(res, TokenType::operator_token);
     // set priority
@@ -69,9 +67,10 @@ Token read_name(std::string s, size_t& from) {
             is_operator(s[from]) or 
             is_open_bracket(s[from]) or 
             is_close_bracket(s[from])) {
+            from--;
             break;
         } else {
-            res += res[from];
+            res += s[from];
         }
     }
     auto t = TokenType::name_token;
@@ -90,17 +89,17 @@ Token read_name(std::string s, size_t& from) {
 
 
 Token read_literal(std::string s, size_t& from) {
-    std::string res = "";
+    std::string res("");
     if (s[from] == '\"') {  // string
-        from++;
         res += s[from];
+        from++;
         while (s[from] != '\"') {
-            res += res[from];
+            res += s[from];
             from++;
         }
         res += s[from];
     } else if (s[from] == '\'' and s[from + 2] == '\'') {  // char
-        res += '\'' + s[from + 1] + '\'';
+        res += std::string("\'") + s[from + 1] + "\'";
         from += 2;
     } else if (isdigit(s[from])) {  // number
         bool point = false;
@@ -125,9 +124,9 @@ std::vector<Token> tokenize(std::string s) {
         } else if (isdigit(s[i]) or s[i] == '\"' or s[i] == '\'') {
             res.push_back(read_literal(s, i));
         } else if (is_open_bracket(s[i])) {
-            res.push_back(Token("" + s[i], TokenType::open_bracket_token));
+            res.push_back(Token(std::string(1, s[i]), TokenType::open_bracket_token));
         } else if (is_close_bracket(s[i])) {
-            res.push_back(Token("" + s[i], TokenType::close_bracket_token));
+            res.push_back(Token(std::string(1, s[i]), TokenType::close_bracket_token));
         }
     }
     return res;

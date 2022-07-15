@@ -1,11 +1,11 @@
-# Catch testing framework
-Include(FetchContent)
-FetchContent_Declare(
-  Catch2
-  GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-  GIT_TAG        v3.0.1 # or a later release
+# tests for libparser
+set(SRC_LIBPARSER_TESTS 
+    libparser/context.test.cpp 
+    libparser/tokenizator.test.cpp 
+    libparser/parser.test.cpp
 )
-FetchContent_MakeAvailable(Catch2)
-
-add_executable(tests libparser/test.cpp)
-target_link_libraries(tests PRIVATE Catch2::Catch2WithMain)
+add_executable(libparser_test ${SRC_LIBPARSER_TESTS})
+target_compile_features(libparser_test PUBLIC cxx_std_17)
+target_link_libraries(libparser_test PRIVATE Catch2::Catch2WithMain parser)
+# add to CTest
+catch_discover_tests(libparser_test)

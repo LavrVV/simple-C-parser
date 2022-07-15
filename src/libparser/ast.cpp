@@ -7,6 +7,10 @@ AST::AST(std::vector<Token> tokens) {
     this->parse(tokens);
 }
 
+std::vector<std::shared_ptr<ASTNode>> AST::get_root() {
+    return root;
+}
+
 std::string AST::execute() {
     Value res("");
     Context context;
@@ -30,6 +34,7 @@ void AST::parse(std::vector<Token>& tokens) {
 
 std::shared_ptr<ASTNode> AST::parse_statment(std::vector<Token>& tokens, size_t& pos) {
     if (tokens[pos].get_value() == ";") {
+        pos++;
         return std::shared_ptr<ASTNode>(new ASTNode());
     } else if (tokens[pos].token_type == TokenType::name_token) {
         if (tokens[pos + 1].get_value() == "(") {
@@ -80,10 +85,12 @@ std::shared_ptr<ASTNode> AST::parse_statment(std::vector<Token>& tokens, size_t&
         if (tokens[pos].get_value() == "for") {
             pos += 2;
             auto decl = this->parse_statment(tokens, pos);
+            auto def = this->parse_statment(tokens, pos);
             auto condition = this->parse_expression(tokens, pos);
             auto incr = this->parse_statment(tokens, pos);
+            pos++;
             auto block = this->parse_block(tokens, pos);
-            auto resfor = new For(decl, condition, incr, block);
+            auto resfor = new For(decl, def, condition, incr, block);
             return std::shared_ptr<ASTNode>(resfor);
         } else if (tokens[pos].get_value() == "while") {
             pos += 2;
@@ -124,6 +131,7 @@ std::shared_ptr<ASTNode> AST::parse_expression(std::vector<Token>& tokens, size_
     int brackets = 0;
     for (; pos < tokens.size(); ++pos) {
         if (tokens[pos].get_value() == ";" or tokens[pos].get_value() == ",") {
+            pos++;
             break;
         } else if (tokens[pos].token_type == TokenType::literal_token) {
             out_stack.push(node_from_token(tokens[pos]));
@@ -173,6 +181,7 @@ std::shared_ptr<ASTNode> AST::parse_expression(std::vector<Token>& tokens, size_
 
 std::shared_ptr<ASTNode> AST::parse_block(std::vector<Token>& tokens, size_t& pos) {
     Block* root = new Block();
+    if (tokens[pos].get_value() == "{") pos++;
     for (; pos < tokens.size(); ) {
         if (tokens[pos].get_value() == "}") {
             break;
@@ -202,7 +211,7 @@ void AST::build_expression_ast(std::stack<std::shared_ptr<ASTNode>>& out_stack,
     if (out_stack.empty())
         return;
 
-    // left operand
+    // right operand
     if (dynamic_cast<Operator*>(out_stack.top().get())) {
         auto next = out_stack.top();
         curr->add_child(next);
@@ -214,7 +223,7 @@ void AST::build_expression_ast(std::stack<std::shared_ptr<ASTNode>>& out_stack,
         out_stack.pop();
     }
 
-    // right operand
+    // left operand
     if (dynamic_cast<Operator*>(out_stack.top().get())) {
         auto next = out_stack.top();
         curr->add_child(next);

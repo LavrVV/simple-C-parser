@@ -16,6 +16,7 @@ enum TokenType {
 class Token {
 public:
     Token(std::string s, TokenType t);
+    Token(std::string s, TokenType t, int p);
 
     TokenType token_type;
 

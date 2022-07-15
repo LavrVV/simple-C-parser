@@ -6,7 +6,7 @@ int main(int argc, char** argv) {
         AST a = parse(argv[1]);
         a.execute();
     } else {
-        AST a = parse("");
+        AST a = parse("void main() {}");
         a.execute();
     }
     return 0;

@@ -1,13 +1,18 @@
-cmake_minimum_required(VERSION 3.13)
+cmake_minimum_required(VERSION 3.15)
 
 project(simple_C_parser VERSION 0.1.0)
 
-include_directories(include)
-#executable
-add_subdirectory(${PROJECT_NAME})
-#libs
-add_subdirectory(src)
-#tests
-add_subdirectory(tests)
+if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+    set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+    include(cmake/LoadCatch2.cmake)
+    include(CTest)
+endif()
 
-target_link_libraries(${PROJECT_NAME} libparser)
+# headers
+include_directories(include)
+# libs
+add_subdirectory(src)
+# executable
+add_subdirectory(apps)
+# tests
+add_subdirectory(tests)

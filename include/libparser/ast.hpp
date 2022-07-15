@@ -32,7 +32,8 @@ public:
     explicit AST(std::vector<Token> tokens);
 
     std::string execute();
-
+    
+    std::vector<std::shared_ptr<ASTNode>> get_root();
 private:
     void parse(std::vector<Token>& tokens);
 

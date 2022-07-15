@@ -7,5 +7,6 @@ set(SRC_LIBPARSER
     libparser/context.cpp 
     libparser/base_astnode.cpp
 )
-add_library(libparser STATIC "${SRC_LIBPARSER}")
-target_compile_features(libparser PUBLIC cxx_std_17)
+add_library(parser STATIC "${SRC_LIBPARSER}")
+target_compile_features(parser PUBLIC cxx_std_17)
+target_compile_options(parser PRIVATE -Wall -Wextra)
