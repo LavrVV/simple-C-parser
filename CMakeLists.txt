@@ -4,6 +4,7 @@ project(simple_C_parser VERSION 0.1.0)
 
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+    include(cmake/LoadCLI.cmake)
     include(cmake/LoadCatch2.cmake)
     include(CTest)
 endif()
