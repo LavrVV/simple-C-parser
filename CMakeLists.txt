@@ -17,3 +17,9 @@ add_subdirectory(src)
 add_subdirectory(apps)
 # tests
 add_subdirectory(tests)
+
+# install
+if(WIN32)
+    install(TARGETS ${PROJECT_NAME} RUNTIME)
+    include(CPack)
+endif()
