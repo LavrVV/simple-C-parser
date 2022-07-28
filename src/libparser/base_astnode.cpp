@@ -1,3 +1,4 @@
+#include <stdexcept>
 #include <libparser/base_astnode.hpp>
 
 

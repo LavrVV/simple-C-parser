@@ -5,6 +5,7 @@
 #include <stack>
 #include <memory>
 #include <vector>
+#include <string>
 
 class ASTNode;
 

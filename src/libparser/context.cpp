@@ -1,3 +1,4 @@
+#include <stdexcept>
 #include <libparser/context.hpp>
 
 Context::Context(): context() {
