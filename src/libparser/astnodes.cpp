@@ -29,7 +29,7 @@ Variable::Variable(std::string name): name(name) {
 Value Variable::execute(Context& context) {
     auto res = context.get_var_value(this->name);
     if (typeid(*res) == typeid(Value)) 
-        return *(dynamic_cast<Value*>(res.get()));
+        return *std::dynamic_pointer_cast<Value>(res);
 }
 
 
@@ -286,7 +286,7 @@ CallFunction::CallFunction(std::shared_ptr<ASTNode> root,
 
 Value CallFunction::execute(Context& context) {
     context.push_scope();
-    auto func = dynamic_cast<Function*>(root.get());
+    auto func = std::dynamic_pointer_cast<Function>(root);
     auto param_name = func->get_param_names().begin();
     for (auto param: nodes) {
         context.set_var_value(*param_name, param);
@@ -299,6 +299,6 @@ Value CallFunction::execute(Context& context) {
 
 
 const std::vector<std::string>& CallFunction::get_param_names() const {
-    Function* f = dynamic_cast<Function*>(root.get());
+    std::shared_ptr<Function> f = std::dynamic_pointer_cast<Function>(root);
     return f->get_param_names();
 }

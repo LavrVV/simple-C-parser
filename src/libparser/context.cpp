@@ -1,8 +1,7 @@
 #include <stdexcept>
 #include <libparser/context.hpp>
 
-Context::Context(): context() {
-}
+Context::Context(): context() { }
 
 std::shared_ptr<ASTNode> Context::get_var_value(std::string& name) {
     for (auto s = context.rbegin(); s < context.rend(); s++) {
@@ -14,14 +13,14 @@ std::shared_ptr<ASTNode> Context::get_var_value(std::string& name) {
 }
 
 void Context::add_var(std::string& name) {
-    (*(*context.rbegin())).insert_or_assign(name, std::shared_ptr<ASTNode>(nullptr));
+    (*context.rbegin())->insert_or_assign(name, std::shared_ptr<ASTNode>(nullptr));
 }
 
 void Context::set_var_value(std::string name, std::shared_ptr<ASTNode> value) {
     for (auto c = context.rbegin(); c < context.rend(); c++) {
         try {
             (*c)->at(name);
-            (*(*c))[name] = value;
+            (*c)->insert_or_assign(name, value);
             return;
         } catch (std::out_of_range exp) {}
     }
@@ -44,5 +43,4 @@ Context::~Context() {
     while (!context.empty()){
         pop_scope();
     }
-    
 }

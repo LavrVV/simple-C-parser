@@ -173,7 +173,7 @@ std::shared_ptr<ASTNode> AST::parse_expression(std::vector<Token>& tokens, size_
     }
     std::shared_ptr<ASTNode> root = out_stack.top();
     out_stack.pop();
-    if (dynamic_cast<Operator*>(root.get())) {
+    if (std::dynamic_pointer_cast<Operator>(root)) {
         build_expression_ast(out_stack, root);
     }
     return root;
@@ -212,7 +212,7 @@ void AST::build_expression_ast(std::stack<std::shared_ptr<ASTNode>>& out_stack,
         return;
 
     // right operand
-    if (dynamic_cast<Operator*>(out_stack.top().get())) {
+    if (std::dynamic_pointer_cast<Operator>(out_stack.top())) {
         auto next = out_stack.top();
         curr->add_child(next);
         out_stack.pop();
@@ -224,7 +224,7 @@ void AST::build_expression_ast(std::stack<std::shared_ptr<ASTNode>>& out_stack,
     }
 
     // left operand
-    if (dynamic_cast<Operator*>(out_stack.top().get())) {
+    if (std::dynamic_pointer_cast<Operator>(out_stack.top())) {
         auto next = out_stack.top();
         curr->add_child(next);
         out_stack.pop();
