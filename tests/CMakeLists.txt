@@ -9,3 +9,4 @@ target_compile_features(libparser_test PUBLIC cxx_std_17)
 target_link_libraries(libparser_test PRIVATE Catch2::Catch2WithMain parser)
 # add to CTest
 catch_discover_tests(libparser_test)
+add_test(libparser_test libparser_test)
