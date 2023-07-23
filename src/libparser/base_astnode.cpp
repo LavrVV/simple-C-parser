@@ -17,19 +17,19 @@ void ASTNode::add_child(std::shared_ptr<ASTNode> child) {
 }
 
 Value::Value(std::string val) {
-    if (val[0] == '\'' and val.size() == 3) {
+    if (val[0] == '\'' && val.size() == 3) {
         this->valtype = ASTValType::Char;
         this->value = val.substr(1, 1);
     } else if (val[0] == '\"') {
         this->valtype = ASTValType::String;
         this->value = val.substr(1, val.size() - 1);
-    } else if (std::isdigit(val[0]) or val[0] == '-') {
+    } else if (std::isdigit(val[0]) || val[0] == '-') {
         try {
             std::stof(val);
             this->valtype = ASTValType::Float;
             this->value = val;
             return;
-        } catch (std::invalid_argument e) {
+        } catch (std::invalid_argument& e) {
             // TODO
         }
         try {
@@ -37,13 +37,13 @@ Value::Value(std::string val) {
             this->valtype = ASTValType::Int;
             this->value = val;
             return;
-        } catch (std::invalid_argument e) {
+        } catch (std::invalid_argument& e) {
             // TODO
         }
-    } else if (val == "true" or val == "false") {
+    } else if (val == "true" || val == "false") {
         this->valtype = ASTValType::Bool;
         this->value = val;
-    } else if (val == "" or val == "null") {
+    } else if (val == "" || val == "null") {
         this->valtype = ASTValType::Void;
         this->value = val;
     }

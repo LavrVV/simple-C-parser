@@ -26,8 +26,8 @@ void AST::parse(std::vector<Token>& tokens) {
         auto st = this->parse_statment(tokens, pos);
         root.push_back(st);
     }
-
-    auto f = new CallFunction(this->vars["main"], std::vector<std::shared_ptr<ASTNode>>());
+    std::vector<std::shared_ptr<ASTNode>> main;
+    auto f = new CallFunction(this->vars["main"], main);
     root.push_back(std::shared_ptr<ASTNode>(f));
 }
 
@@ -130,20 +130,20 @@ std::shared_ptr<ASTNode> AST::parse_expression(std::vector<Token>& tokens, size_
     //create output stack of tokens
     int brackets = 0;
     for (; pos < tokens.size(); ++pos) {
-        if (tokens[pos].get_value() == ";" or tokens[pos].get_value() == ",") {
+        if (tokens[pos].get_value() == ";" || tokens[pos].get_value() == ",") {
             pos++;
             break;
         } else if (tokens[pos].token_type == TokenType::literal_token) {
             out_stack.push(node_from_token(tokens[pos]));
         }
         else if (tokens[pos].token_type == TokenType::operator_token) {
-            while (!temp.empty() and temp.top().priority >= tokens[pos].priority) {
+            while (!temp.empty() && temp.top().priority >= tokens[pos].priority) {
                 out_stack.push(node_from_token(temp.top()));
                 temp.pop();
             }
             temp.push(tokens[pos]);
         } else if (tokens[pos].token_type == TokenType::name_token) {
-            if (pos < tokens.size() - 1 and tokens[pos + 1].token_type == TokenType::open_bracket_token) {
+            if (pos < tokens.size() - 1 && tokens[pos + 1].token_type == TokenType::open_bracket_token) {
                 out_stack.push(parse_function_call(tokens, pos));
             } else {
                 out_stack.push(node_from_token(tokens[pos]));

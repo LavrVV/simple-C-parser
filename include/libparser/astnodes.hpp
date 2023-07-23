@@ -7,7 +7,7 @@
 
 class Variable: public ASTNode {
 public:
-    explicit Variable(std::string& name);
+    explicit Variable(std::string name);
 
     /** return varibale value by name */
     Value execute(Context& context) override;
@@ -45,7 +45,7 @@ private:
 
 class Operator: public ASTNode {
 public:
-    explicit Operator(std::string& val);
+    explicit Operator(std::string val);
 
     Value execute(Context& context) override;
 

@@ -9,4 +9,6 @@ set(SRC_LIBPARSER
 )
 add_library(parser STATIC "${SRC_LIBPARSER}")
 target_compile_features(parser PUBLIC cxx_std_17)
-target_compile_options(parser PRIVATE -Wall -Wextra)
+if(CMAKE_COMPILER_IS_GNUCXX)
+    target_compile_options(parser PRIVATE -Wall -Wextra)
+endif(CMAKE_COMPILER_IS_GNUCXX)

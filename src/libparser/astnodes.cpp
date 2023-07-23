@@ -21,7 +21,7 @@ inline ASTValType read_type(const std::string& return_type) {
 }
 
 
-Variable::Variable(std::string& name): name(name) {
+Variable::Variable(std::string name): name(name) {
 
 }
 
@@ -52,10 +52,11 @@ Assign::Assign(std::string& name, std::shared_ptr<ASTNode> what): name(name) {
 Value Assign::execute(Context& context) {
     auto res = nodes[0]->execute(context);
     context.set_var_value(name, std::shared_ptr<ASTNode>(new Value(res)));
+    return Value("");
 }
 
 
-Operator::Operator(std::string& val) {
+Operator::Operator(std::string val) {
     if (val == "*") {
         this->op_type = OperatorType::Multiply;
     } else if (val == "/") {
@@ -77,7 +78,7 @@ Operator::Operator(std::string& val) {
     }
 }
 
-inline bool to_boolean(std::string& value) {
+inline bool to_boolean(std::string value) {
     if (value == "true")
         return true;
     else if (value == "false")
@@ -97,8 +98,8 @@ Value Operator::execute(Context& context) {
     auto right = nodes[0]->execute(context);
     switch (op_type) {
         case OperatorType::Multiply:
-            if (left.get_valtype() < 2 and right.get_valtype() < 2) {
-                if (left.get_valtype() == ASTValType::Float or 
+            if (left.get_valtype() < 2 && right.get_valtype() < 2) {
+                if (left.get_valtype() == ASTValType::Float || 
                     right.get_valtype() == ASTValType::Float) {
                     return Value(std::to_string(std::stof(left.get_value()) * std::stof(right.get_value())));
                 } else {
@@ -107,8 +108,8 @@ Value Operator::execute(Context& context) {
             }
             break;
         case OperatorType::Divide:
-            if (left.get_valtype() < 2 and right.get_valtype() < 2) {
-                if (left.get_valtype() == ASTValType::Float or 
+            if (left.get_valtype() < 2 && right.get_valtype() < 2) {
+                if (left.get_valtype() == ASTValType::Float || 
                     right.get_valtype() == ASTValType::Float) {
                     return Value(std::to_string(std::stof(left.get_value()) / std::stof(right.get_value())));
                 } else {
@@ -117,21 +118,21 @@ Value Operator::execute(Context& context) {
             }
             break;
         case OperatorType::Plus:
-            if (left.get_valtype() < 2 and right.get_valtype() < 2) {
-                if (left.get_valtype() == ASTValType::Float or 
+            if (left.get_valtype() < 2 && right.get_valtype() < 2) {
+                if (left.get_valtype() == ASTValType::Float || 
                     right.get_valtype() == ASTValType::Float) {
                     return Value(std::to_string(std::stof(left.get_value()) + std::stof(right.get_value())));
                 } else {
                     return Value(std::to_string(std::stoi(left.get_value()) + std::stoi(right.get_value())));
                 }
-            } else if (left.get_valtype() == ASTValType::String or 
+            } else if (left.get_valtype() == ASTValType::String || 
                        right.get_valtype() == ASTValType::String) {
                 return Value(left.get_value() + right.get_value());
             }
             break;
         case OperatorType::Minus:
-            if (left.get_valtype() < 2 and right.get_valtype() < 2) {
-                if (left.get_valtype() == ASTValType::Float or 
+            if (left.get_valtype() < 2 && right.get_valtype() < 2) {
+                if (left.get_valtype() == ASTValType::Float || 
                     right.get_valtype() == ASTValType::Float) {
                     return Value(std::to_string(std::stof(left.get_value()) - std::stof(right.get_value())));
                 } else {
@@ -140,21 +141,21 @@ Value Operator::execute(Context& context) {
             }
             break;
         case OperatorType::Mod:
-            if (left.get_valtype() < 2 and right.get_valtype() < 2) {
+            if (left.get_valtype() < 2 && right.get_valtype() < 2) {
                 return Value(std::to_string(std::stoi(left.get_value()) % std::stoi(right.get_value())));
             }
             break;
         case OperatorType::Or:
-            if (left.get_valtype() == ASTValType::Bool and 
+            if (left.get_valtype() == ASTValType::Bool && 
                 right.get_valtype() == ASTValType::Bool) {
-                auto res = to_boolean(left.get_value()) and to_boolean(right.get_value());
+                auto res = to_boolean(left.get_value()) && to_boolean(right.get_value());
                 return Value(to_string(res)); 
             }
             break;
         case OperatorType::And:
-            if (left.get_valtype() == ASTValType::Bool and 
+            if (left.get_valtype() == ASTValType::Bool && 
                 right.get_valtype() == ASTValType::Bool) {
-                auto res = to_boolean(left.get_value()) or to_boolean(right.get_value());
+                auto res = to_boolean(left.get_value()) || to_boolean(right.get_value());
                 return Value(to_string(res)); 
             }
             break;

@@ -27,6 +27,6 @@ private:
     std::string token;   
 };
 
-std::vector<Token> tokenize(std::string s);
+std::vector<Token> tokenize(std::string& s);
 
 #endif
