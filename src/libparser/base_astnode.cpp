@@ -23,7 +23,7 @@ Value::Value(std::string val) {
     } else if (val[0] == '\"') {
         this->valtype = ASTValType::String;
         this->value = val.substr(1, val.size() - 1);
-    } else if(std::isdigit(val[0]) or val[0] == '-') {
+    } else if (std::isdigit(val[0]) or val[0] == '-') {
         try {
             std::stof(val);
             this->valtype = ASTValType::Float;

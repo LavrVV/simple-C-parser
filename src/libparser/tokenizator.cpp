@@ -13,14 +13,14 @@ std::string Token::get_value() const {
 
 
 bool is_open_bracket(char c) {
-    if(c == '[' || c == '{' || c == '(' || c == '<')
+    if (c == '[' || c == '{' || c == '(' || c == '<')
         return true;
     else
         return false;
 }
 
 bool is_close_bracket(char c) {
-    if(c == ']' || c == '}' || c == ')' || c == '>')
+    if (c == ']' || c == '}' || c == ')' || c == '>')
         return true;
     else
         return false;
@@ -28,7 +28,7 @@ bool is_close_bracket(char c) {
 
 // TODO add > < >= <= operator
 bool is_operator(char c) {
-    if(c == '+' || c == '-' || c == '*' || c == '/' || c == '%' || c == '!' ||
+    if (c == '+' || c == '-' || c == '*' || c == '/' || c == '%' || c == '!' ||
             c == '|' || c == '&' || c == '=' || c == ',' || c == ';')
         return true;
     else
@@ -37,22 +37,22 @@ bool is_operator(char c) {
 
 
 bool is_separator(char c) {
-    if(is_operator(c) || is_open_bracket(c) || is_close_bracket(c) || isspace(c))
+    if (is_operator(c) || is_open_bracket(c) || is_close_bracket(c) || isspace(c))
         return true;
     else
         return false;
 }
 
 
-Token read_operator(std::string s, size_t& from) {
+Token read_operator(std::string& s, size_t& from) {
     std::string res(1, s[from]);
-    if(is_operator(s[from + 1])){
+    if (is_operator(s[from + 1])) {
         res += s[from + 1];
         from++;
     }
     auto t = Token(res, TokenType::operator_token);
     // set priority
-    if(res == "*" or res == "/" or res == "%")
+    if (res == "*" or res == "/" or res == "%")
         t.priority = 2;
     else if(res == "+" or res == "-")
         t.priority = 1;
@@ -60,7 +60,7 @@ Token read_operator(std::string s, size_t& from) {
 }
 
 // can be read literal or operator
-Token read_name(std::string s, size_t& from) {
+Token read_name(std::string& s, size_t& from) {
     std::string res = "";
     for (;from < s.size(); ++from) {
         if (isspace(s[from]) or 
@@ -88,7 +88,7 @@ Token read_name(std::string s, size_t& from) {
 }
 
 
-Token read_literal(std::string s, size_t& from) {
+Token read_literal(std::string& s, size_t& from) {
     std::string res("");
     if (s[from] == '\"') {  // string
         res += s[from];
@@ -114,7 +114,7 @@ Token read_literal(std::string s, size_t& from) {
     return Token(res, TokenType::literal_token);
 }
 
-std::vector<Token> tokenize(std::string s) {
+std::vector<Token> tokenize(std::string& s) {
     auto res = std::vector<Token>();
     for (size_t i = 0; i < s.size(); ++i) {
         if (is_operator(s[i])) {

@@ -6,7 +6,7 @@
 std::string read_file(std::ifstream& file) {
     std::string tmp;
     std::string res("");
-    while(std::getline(file, tmp)) {
+    while (std::getline(file, tmp)) {
         res += tmp;
     }
     return res;

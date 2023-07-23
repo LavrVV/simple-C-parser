@@ -3,7 +3,7 @@
 #include <queue>
 
 
-AST::AST(std::vector<Token> tokens) {
+AST::AST(std::vector<Token>& tokens) {
     this->parse(tokens);
 }
 
@@ -15,7 +15,7 @@ std::string AST::execute() {
     Value res("");
     Context context;
     context.push_scope(&vars);
-    for (auto st: root)
+    for (const auto& st: root)
         res = st->execute(context);
     return res.get_value();
 }
@@ -143,7 +143,7 @@ std::shared_ptr<ASTNode> AST::parse_expression(std::vector<Token>& tokens, size_
             }
             temp.push(tokens[pos]);
         } else if (tokens[pos].token_type == TokenType::name_token) {
-            if(pos < tokens.size() - 1 and tokens[pos + 1].token_type == TokenType::open_bracket_token) {
+            if (pos < tokens.size() - 1 and tokens[pos + 1].token_type == TokenType::open_bracket_token) {
                 out_stack.push(parse_function_call(tokens, pos));
             } else {
                 out_stack.push(node_from_token(tokens[pos]));
@@ -198,7 +198,7 @@ std::shared_ptr<ASTNode> AST::parse_function_call(std::vector<Token>& tokens, si
     auto root = this->vars.find(tokens[pos].get_value())->second;
     pos += 2;
     for (; pos < tokens.size(); ++pos) {
-        if(tokens[pos].token_type == TokenType::close_bracket_token)
+        if (tokens[pos].token_type == TokenType::close_bracket_token)
             break;
         params.push_back(parse_expression(tokens, pos));
     }

@@ -7,7 +7,7 @@
 
 class Variable: public ASTNode {
 public:
-    explicit Variable(std::string name);
+    explicit Variable(std::string& name);
 
     /** return varibale value by name */
     Value execute(Context& context) override;
@@ -19,7 +19,7 @@ private:
 
 class VariableDeclaration: public ASTNode {
 public:
-    VariableDeclaration(std::string name, std::string valtype);
+    VariableDeclaration(std::string& name, std::string& valtype);
     
     /** add var to current context*/
     Value execute(Context& context) override;
@@ -33,7 +33,7 @@ private:
 
 class Assign: public ASTNode {
 public:
-    Assign(std::string name, std::shared_ptr<ASTNode> what);
+    Assign(std::string& name, std::shared_ptr<ASTNode> what);
 
     /** set variable value by name */
     Value execute(Context& context) override;
@@ -45,7 +45,7 @@ private:
 
 class Operator: public ASTNode {
 public:
-    explicit Operator(std::string val);
+    explicit Operator(std::string& val);
 
     Value execute(Context& context) override;
 
@@ -115,8 +115,8 @@ public:
 
 class Function: public ASTNode {
 public:
-    Function(std::string name, std::string return_type,
-             std::vector<std::string> params, std::shared_ptr<ASTNode> root);
+    Function(std::string& name, std::string& return_type,
+             std::vector<std::string>& params, std::shared_ptr<ASTNode> root);
 
     Value execute(Context& context) override;
 
@@ -134,7 +134,7 @@ private:
 class CallFunction: public ASTNode {
 public:
     CallFunction(std::shared_ptr<ASTNode> root,
-                 std::vector<std::shared_ptr<ASTNode>> params);
+                 std::vector<std::shared_ptr<ASTNode>>& params);
 
     Value execute(Context& context) override;
 
