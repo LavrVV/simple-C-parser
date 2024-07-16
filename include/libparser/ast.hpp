@@ -29,21 +29,21 @@
  */
 class AST {
 public:
-    explicit AST(std::vector<Token>& tokens);
+    explicit AST(const std::vector<Token>& tokens);
 
     std::string execute();
     
-    std::vector<std::shared_ptr<ASTNode>> get_root();
+    const std::vector<std::shared_ptr<ASTNode>>& get_root() const;
 private:
-    void parse(std::vector<Token>& tokens);
+    void parse(const std::vector<Token>& tokens);
 
-    std::shared_ptr<ASTNode> parse_statment(std::vector<Token>& tokens, size_t& pos);
+    std::shared_ptr<ASTNode> parse_statment(const std::vector<Token>& tokens, size_t& pos);
 
-    std::shared_ptr<ASTNode> parse_expression(std::vector<Token>& tokens, size_t& pos);
+    std::shared_ptr<ASTNode> parse_expression(const std::vector<Token>& tokens, size_t& pos);
 
-    std::shared_ptr<ASTNode> parse_block(std::vector<Token>& tokens, size_t& pos);
+    std::shared_ptr<ASTNode> parse_block(const std::vector<Token>& tokens, size_t& pos);
 
-    std::shared_ptr<ASTNode> parse_function_call(std::vector<Token>& tokens, size_t& pos);
+    std::shared_ptr<ASTNode> parse_function_call(const std::vector<Token>& tokens, size_t& pos);
 
     std::shared_ptr<ASTNode> node_from_token(const Token& token);
 

@@ -15,11 +15,11 @@ public:
    
     Context();
     
-    std::shared_ptr<ASTNode> get_var_value(std::string& name);
+    const std::shared_ptr<ASTNode> get_var_value(const std::string& name) const;
     
-    void set_var_value(std::string name, std::shared_ptr<ASTNode> value);
+    void set_var_value(const std::string& name, std::shared_ptr<ASTNode> value);
     
-    void add_var(std::string& name);
+    void add_var(const std::string& name);
     
     void push_scope(Scope* scope);
     

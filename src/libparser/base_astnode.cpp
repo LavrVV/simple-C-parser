@@ -16,7 +16,7 @@ void ASTNode::add_child(std::shared_ptr<ASTNode> child) {
     this->nodes.push_back(child);
 }
 
-Value::Value(std::string val) {
+Value::Value(const std::string& val) {
     if (val[0] == '\'' && val.size() == 3) {
         this->valtype = ASTValType::Char;
         this->value = val.substr(1, 1);
@@ -55,7 +55,7 @@ Value Value::execute(Context& context) {
 }
 
 
-std::string Value::get_value() const {
+const std::string& Value::get_value() const {
     return this->value;
 }
 

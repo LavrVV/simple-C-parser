@@ -21,7 +21,7 @@ inline ASTValType read_type(const std::string& return_type) {
 }
 
 
-Variable::Variable(std::string name): name(name) {
+Variable::Variable(const std::string& name): name(name) {
 
 }
 
@@ -33,7 +33,8 @@ Value Variable::execute(Context& context) {
 }
 
 
-VariableDeclaration::VariableDeclaration(std::string& name, std::string& valtype): name(name) {
+VariableDeclaration::VariableDeclaration(
+    const std::string& name, const std::string& valtype): name(name) {
     this->valtype = read_type(valtype);
 }
 
@@ -44,7 +45,8 @@ Value VariableDeclaration::execute(Context& context) {
 }
 
 
-Assign::Assign(std::string& name, std::shared_ptr<ASTNode> what): name(name) {
+Assign::Assign(
+    const std::string& name, const std::shared_ptr<ASTNode> what): name(name) {
     this->nodes.push_back(what);
 }
 
@@ -56,7 +58,7 @@ Value Assign::execute(Context& context) {
 }
 
 
-Operator::Operator(std::string val) {
+Operator::Operator(const std::string& val) {
     if (val == "*") {
         this->op_type = OperatorType::Multiply;
     } else if (val == "/") {
@@ -260,7 +262,7 @@ Value Block::execute(Context& context) {
 }
 
 
-Function::Function(std::string& name, std::string& return_type,
+Function::Function(const std::string& name, const std::string& return_type,
                    std::vector<std::string>& params, std::shared_ptr<ASTNode> root):
     name(name), params(params) {
     this->return_type = read_type(return_type);
@@ -279,7 +281,7 @@ const std::vector<std::string>& Function::get_param_names() const {
 
 
 CallFunction::CallFunction(std::shared_ptr<ASTNode> root,
-                           std::vector<std::shared_ptr<ASTNode>>& params):
+                           const std::vector<std::shared_ptr<ASTNode>>& params):
                            root(root) {
     this->nodes = params;
     //params

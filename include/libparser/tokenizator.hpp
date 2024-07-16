@@ -15,18 +15,18 @@ enum class TokenType {
 
 class Token {
 public:
-    Token(std::string s, TokenType t);
-    Token(std::string s, TokenType t, int p);
+    Token(const std::string& s, TokenType t);
+    Token(const std::string& s, TokenType t, int p);
 
     TokenType token_type;
 
     int priority;
     
-    std::string get_value() const;
+    const std::string& get_value() const;
 private:
     std::string token;   
 };
 
-std::vector<Token> tokenize(std::string& s);
+std::vector<Token> tokenize(const std::string& s);
 
 #endif

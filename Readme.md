@@ -3,7 +3,6 @@
 This parser created without any parser generator, just vanilla C++.
 For now it does not support arrays, compare operators.
 No checks for grammar errors for now so it may works only if grammar is correct
-TODO: unit test to check if it really works:)
 
 ## Grammar:
 Something like that:

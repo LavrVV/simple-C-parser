@@ -3,7 +3,7 @@
 
 Context::Context(): context() { }
 
-std::shared_ptr<ASTNode> Context::get_var_value(std::string& name) {
+const std::shared_ptr<ASTNode> Context::get_var_value(const std::string& name) const {
     for (auto s = context.rbegin(); s < context.rend(); s++) {
         try {
             return (*s)->at(name);
@@ -12,11 +12,11 @@ std::shared_ptr<ASTNode> Context::get_var_value(std::string& name) {
     return std::shared_ptr<ASTNode>();
 }
 
-void Context::add_var(std::string& name) {
+void Context::add_var(const std::string& name) {
     (*context.rbegin())->insert_or_assign(name, std::shared_ptr<ASTNode>(nullptr));
 }
 
-void Context::set_var_value(std::string name, std::shared_ptr<ASTNode> value) {
+void Context::set_var_value(const std::string& name, std::shared_ptr<ASTNode> value) {
     for (auto c = context.rbegin(); c < context.rend(); c++) {
         try {
             (*c)->at(name);

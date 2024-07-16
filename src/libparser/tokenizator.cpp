@@ -3,11 +3,11 @@
 #include <cctype>
 
 
-Token::Token(std::string s, TokenType t): token(s), token_type(t), priority(0) {}
+Token::Token(const std::string& s, TokenType t): token(s), token_type(t), priority(0) {}
 
-Token::Token(std::string s, TokenType t, int p): token(s), token_type(t), priority(p) {}
+Token::Token(const std::string& s, TokenType t, int p): token(s), token_type(t), priority(p) {}
 
-std::string Token::get_value() const {
+const std::string& Token::get_value() const {
     return  this->token;
 }
 
@@ -44,7 +44,7 @@ bool is_separator(char c) {
 }
 
 
-Token read_operator(std::string& s, size_t& from) {
+Token read_operator(const std::string& s, size_t& from) {
     std::string res(1, s[from]);
     if (is_operator(s[from + 1])) {
         res += s[from + 1];
@@ -60,7 +60,7 @@ Token read_operator(std::string& s, size_t& from) {
 }
 
 // can be read literal or operator
-Token read_name(std::string& s, size_t& from) {
+Token read_name(const std::string& s, size_t& from) {
     std::string res = "";
     for (;from < s.size(); ++from) {
         if (isspace(s[from]) || 
@@ -88,7 +88,7 @@ Token read_name(std::string& s, size_t& from) {
 }
 
 
-Token read_literal(std::string& s, size_t& from) {
+Token read_literal(const std::string& s, size_t& from) {
     std::string res("");
     if (s[from] == '\"') {  // string
         res += s[from];
@@ -114,7 +114,7 @@ Token read_literal(std::string& s, size_t& from) {
     return Token(res, TokenType::literal_token);
 }
 
-std::vector<Token> tokenize(std::string& s) {
+std::vector<Token> tokenize(const std::string& s) {
     auto res = std::vector<Token>();
     for (size_t i = 0; i < s.size(); ++i) {
         if (is_operator(s[i])) {

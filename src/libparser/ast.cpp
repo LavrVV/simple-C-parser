@@ -3,11 +3,11 @@
 #include <queue>
 
 
-AST::AST(std::vector<Token>& tokens) {
+AST::AST(const std::vector<Token>& tokens) {
     this->parse(tokens);
 }
 
-std::vector<std::shared_ptr<ASTNode>> AST::get_root() {
+const std::vector<std::shared_ptr<ASTNode>>& AST::get_root() const {
     return root;
 }
 
@@ -20,7 +20,7 @@ std::string AST::execute() {
     return res.get_value();
 }
 
-void AST::parse(std::vector<Token>& tokens) {
+void AST::parse(const std::vector<Token>& tokens) {
     size_t pos = 0;
     while (pos < tokens.size()) {
         auto st = this->parse_statment(tokens, pos);
@@ -32,7 +32,7 @@ void AST::parse(std::vector<Token>& tokens) {
 }
 
 
-std::shared_ptr<ASTNode> AST::parse_statment(std::vector<Token>& tokens, size_t& pos) {
+std::shared_ptr<ASTNode> AST::parse_statment(const std::vector<Token>& tokens, size_t& pos) {
     if (tokens[pos].get_value() == ";") {
         pos++;
         return std::shared_ptr<ASTNode>(new ASTNode());
@@ -124,7 +124,7 @@ std::shared_ptr<ASTNode> AST::parse_statment(std::vector<Token>& tokens, size_t&
     return std::shared_ptr<ASTNode>(new ASTNode());
 }
 
-std::shared_ptr<ASTNode> AST::parse_expression(std::vector<Token>& tokens, size_t& pos) {
+std::shared_ptr<ASTNode> AST::parse_expression(const std::vector<Token>& tokens, size_t& pos) {
     std::stack<Token> temp;
     std::stack<std::shared_ptr<ASTNode>> out_stack;
     //create output stack of tokens
@@ -179,7 +179,7 @@ std::shared_ptr<ASTNode> AST::parse_expression(std::vector<Token>& tokens, size_
     return root;
 }
 
-std::shared_ptr<ASTNode> AST::parse_block(std::vector<Token>& tokens, size_t& pos) {
+std::shared_ptr<ASTNode> AST::parse_block(const std::vector<Token>& tokens, size_t& pos) {
     Block* root = new Block();
     if (tokens[pos].get_value() == "{") pos++;
     for (; pos < tokens.size(); ) {
@@ -193,7 +193,7 @@ std::shared_ptr<ASTNode> AST::parse_block(std::vector<Token>& tokens, size_t& po
     return std::shared_ptr<ASTNode>(root);
 }
 
-std::shared_ptr<ASTNode> AST::parse_function_call(std::vector<Token>& tokens, size_t& pos) {
+std::shared_ptr<ASTNode> AST::parse_function_call(const std::vector<Token>& tokens, size_t& pos) {
     std::vector<std::shared_ptr<ASTNode>> params;
     auto root = this->vars.find(tokens[pos].get_value())->second;
     pos += 2;

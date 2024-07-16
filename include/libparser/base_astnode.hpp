@@ -13,7 +13,7 @@ enum ASTValType {
 };
 
 
-enum OperatorType {
+enum class OperatorType {
     Plus,
     Minus,
     Divide,
@@ -44,11 +44,11 @@ public:
 
 class Value: public ASTNode {
 public:
-    explicit Value(std::string val);
+    explicit Value(const std::string& val);
 
     Value execute(Context& context) override;
 
-    std::string get_value() const;
+    const std::string& get_value() const;
 
     ASTValType get_valtype() const;
 

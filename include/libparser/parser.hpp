@@ -3,6 +3,6 @@
 
 #include <libparser/ast.hpp>
 
-AST parse(std::string& s);
+AST parse(const std::string& s);
 
 #endif
